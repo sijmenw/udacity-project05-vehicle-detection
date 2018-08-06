@@ -11,7 +11,7 @@ import find_cars
 previous_boxes = []
 
 
-def predict_vehicle(img, n_steps=6, threshold=4):
+def predict_vehicle(img, n_steps=10, threshold=4):
     """Draws vehicle detection on input images
 
 

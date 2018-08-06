@@ -6,7 +6,7 @@ from IPython.display import HTML
 
 import predict_vehicle
 
-clipped_vid = VideoFileClip("test_video.mp4").subclip(0, 0.5)
+clipped_vid = VideoFileClip("project_video.mp4")
 
 annotated_clip = clipped_vid.fl_image(predict_vehicle.predict_vehicle)  # NOTE: this function expects color images!!
 annotated_clip.write_videofile("clip_output_vid.mp4", audio=False)
