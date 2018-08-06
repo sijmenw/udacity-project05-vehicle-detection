@@ -86,8 +86,8 @@ notcars = notcars[0:sample_size]
 # Tweakable parameters
 colorspace = 'HSV'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9
-pix_per_cell = 12
-cell_per_block = 2
+pix_per_cell = 8
+cell_per_block = 8
 hog_channel = "ALL"  # Can be 0, 1, 2, or "ALL"
 # color
 spatial_size = 16

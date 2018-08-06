@@ -23,12 +23,10 @@ cell_per_block = dist_pickle["cell_per_block"]
 spatial_size = dist_pickle["spatial_size"]
 hist_bins = dist_pickle["hist_bins"]
 
-img = mpimg.imread('test_image.jpg')
-
 
 # Define a single function that can extract features using hog sub-sampling and make predictions
 def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
-    draw_img = np.copy(img)
+    boxes = []
     img = img.astype(np.float32) / 255
 
     img_tosearch = img[ystart:ystop, :, :]
@@ -91,18 +89,56 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
                 xbox_left = np.int(xleft * scale)
                 ytop_draw = np.int(ytop * scale)
                 win_draw = np.int(window * scale)
-                cv2.rectangle(draw_img, (xbox_left, ytop_draw + ystart),
-                              (xbox_left + win_draw, ytop_draw + win_draw + ystart), (0, 0, 255), 6)
+                boxes.append(((xbox_left, ytop_draw + ystart),
+                              (xbox_left + win_draw, ytop_draw + win_draw + ystart)))
 
-    return draw_img
+    return boxes
 
 
-ystart = 400
-ystop = 656
-scale = 1.5
+def get_all_boxes(input_img):
+    search_sets = [
+        [400, 460, 0.5],
+        [400, 480, 0.6],
+        [400, 490, 0.7],
+        [400, 510, 0.8],
+        [400, 530, 0.9],
+        [400, 540, 1],
+        [400, 560, 1.25],
+        [400, 600, 1.5],
+        [400, 640, 1.75],
+        [400, 640, 2],
+        [400, 640, 2.25],
+        [400, 640, 2.5],
+        [400, 640, 3],
+        [400, 640, 3.5],
+        [400, 660, 4]
+    ]
 
-out_img = find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
-                    hist_bins)
+    found_boxes = []
 
-plt.imshow(out_img)
-plt.pause(5)
+    for search_set in search_sets:
+        ystart = search_set[0]
+        ystop = search_set[1]
+        scale = search_set[2]
+
+        new_boxes = find_cars(input_img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block,
+                              spatial_size, hist_bins)
+
+        found_boxes += new_boxes
+
+    return found_boxes
+
+
+if __name__ == "__main__":
+
+    img = mpimg.imread('test_image.jpg')
+
+    draw_boxes = get_all_boxes(img)
+
+    draw_img = np.copy(img)
+
+    for box in draw_boxes:
+        cv2.rectangle(draw_img, box[0], box[1], (0, 0, 255), 6)
+
+    plt.imshow(draw_img)
+    plt.pause(5)
