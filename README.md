@@ -71,8 +71,8 @@ Below is an example of the same settings, except the scale is now 2.
 
 #### 2. Examples of test images
 
-Below are examples of images before and after detection. It is clear there is still a large amount of false positives,
- especially directly in front of the car.
+Below are examples of images before and after detection. Some false positives are still detected (example 4). Overall the cars
+ are detected well.
 
 Before 1:
 
@@ -142,6 +142,11 @@ The code for this can be found in `predict_vehicle.py` (lines 15-92).
 ---
 
 ### Discussion
+Some False positives are still detected, this could be fixed by doing more negative-negative mining.
+Furthermore, the bounding boxes are sometimes a bit large, this is very likely due to the data that is selected.
+When a portion of the car is visible in a patch, the patch is classified under vehicle for training.
+Because of this, the parts around the car are also detected as vehicle, and thus classified as such.
 
-This approach is far from perfect as can be seen from the resulting video. I suspect the problem to lie between the sliding window feature extraction and the classifier.
-When I test either component on its own, it appears to be working very well, however combined the accuracy drops drastically.
+To prevent the black and white car being detected as one vehicle, the number of vehicles on screen could be tracked,
+making sure that two vehicles never blend into one. A more complex detection would have to be used to separate one blob in the
+heat map into multiple labels.
