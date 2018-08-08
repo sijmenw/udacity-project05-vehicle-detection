@@ -132,10 +132,12 @@ Here's a [link to my video result](./result_vid.mp4)
 #### 2. Filter false positives
 
 I recorded the positions of positive detections in each frame of the video.
- From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.
- I drew the resulting heatmap on the images to show where positive detections were found.
+ From the positive detections I created a heatmap and then thresholded that map in an attempt to reduce false positives.
+ I used scipy.ndimage.measurements.label() (`predict_vehicle.py` line 84)to generate labels for each 'blob'.
+ I then calculated the min and max values for the x and y coordinates for each label and drew a bounding box accordingly
+ (`predict_vehicle.py` lines 20-40).
 
-The code for this can be found in `predict_vehicle.py` (lines 11-46).
+The code for this can be found in `predict_vehicle.py` (lines 15-92).
 
 ---
 
