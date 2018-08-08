@@ -6,6 +6,8 @@
 import numpy as np
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import scipy
+import cv2
 
 import find_cars
 
@@ -15,7 +17,30 @@ previous_boxes = []
 count = 0
 
 
-def predict_vehicle(img, n_steps=10, threshold=20, mine_boxes=False):
+def blobs_to_boxes(blobs, n):
+    """
+
+    :param blobs: <NxM numpy array> result of a scipy.ndimage.measurements.label() call
+    :param n: <int> number of blobs
+    :return: <list of boxes>
+    """
+    result_boxes = []
+
+    for i in range(n):
+        # get coordinates matching label
+        idx = (blobs == (i + 1)).nonzero()
+
+        # get x and y values separately
+        nonzero_y = np.array(idx[0])
+        nonzero_x = np.array(idx[1])
+
+        # add bounding box from minimum to maximum x and y values
+        result_boxes.append(((np.min(nonzero_x), np.min(nonzero_y)), (np.max(nonzero_x), np.max(nonzero_y))))
+
+    return result_boxes
+
+
+def predict_vehicle(img, n_steps=10, threshold=50, mine_boxes=False):
     """Draws vehicle detection on input images
 
 
@@ -51,10 +76,17 @@ def predict_vehicle(img, n_steps=10, threshold=20, mine_boxes=False):
         for box in time_step:
             heat_map[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
 
-    # Zero out pixels below the threshold
+    # zero out pixels below the threshold
     heat_map[heat_map < threshold] = 0
 
+    # prepare for identifying blobs
+    heat_map[heat_map >= threshold] = 1
+    blobs, n = scipy.ndimage.measurements.label(heat_map)
+
+    draw_boxes = blobs_to_boxes(blobs, n)
+
     # change img
-    img[heat_map > 0] = np.array([255, 0, 0])
+    for box in draw_boxes:
+        cv2.rectangle(img, box[0], box[1], (0, 0, 255), 6)
 
     return img
