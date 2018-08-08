@@ -82,9 +82,11 @@ print("Number of notcar images: {}".format(len(notcars)))
 
 # Reduce the sample size because HOG features are slow to compute
 # The quiz evaluator times out after 13s of CPU time
-sample_size = 500
+sample_size = -1
 cars = cars[0:sample_size]
 notcars = notcars[0:sample_size]
+
+print("Sample size: {}".format(sample_size))
 
 # Tweakable parameters
 colorspace = 'YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
