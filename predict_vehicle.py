@@ -4,14 +4,18 @@
 # predicts location of vehicles in an image
 
 import numpy as np
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 
 import find_cars
 
 
 previous_boxes = []
 
+count = 0
 
-def predict_vehicle(img, n_steps=10, threshold=4):
+
+def predict_vehicle(img, n_steps=10, threshold=20, mine_boxes=False):
     """Draws vehicle detection on input images
 
 
@@ -25,14 +29,24 @@ def predict_vehicle(img, n_steps=10, threshold=4):
     :param img: <numpy array> the image the be used
     :param n_steps: <int> number of time steps to go back for checking boxes
     :param threshold: <int> min number of detections to be considered True
+    :param mine_boxes: <bool> if True, saves patches of any detected boxes
     :return: <list of list of tuples> List of coordinate sets
     """
     global previous_boxes
+    global count
 
     previous_boxes.append(find_cars.get_all_boxes(img))
 
     heat_map = np.zeros(img.shape[:2])
 
+    # if mine_boxes is True, save the detected box as a separate image so it can be used in training later
+    if mine_boxes:
+        for box in previous_boxes[-1]:
+            count += 1
+            patch = img[box[0][1]:box[1][1], box[0][0]:box[1][0]]
+            mpimg.imsave("./images/mining/{}_{:0>5}.png".format(box[0][0], count), patch)
+
+    # build heat map from boxes
     for time_step in previous_boxes[-n_steps:]:
         for box in time_step:
             heat_map[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1

@@ -72,10 +72,13 @@ images = glob.glob('images/*/*/*.png')
 cars = []
 notcars = []
 for image in images:
-    if 'non-vehicles' in image:
+    if '/non-vehicles/' in image:
         notcars.append(image)
-    else:
+    elif '/vehicles/':
         cars.append(image)
+
+print("Number of car images: {}".format(len(cars)))
+print("Number of notcar images: {}".format(len(notcars)))
 
 # Reduce the sample size because HOG features are slow to compute
 # The quiz evaluator times out after 13s of CPU time
@@ -84,14 +87,14 @@ cars = cars[0:sample_size]
 notcars = notcars[0:sample_size]
 
 # Tweakable parameters
-colorspace = 'HSV'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
+colorspace = 'YCrCb'  # Can be RGB, HSV, LUV, HLS, YUV, YCrCb
 orient = 9
 pix_per_cell = 8
 cell_per_block = 8
 hog_channel = "ALL"  # Can be 0, 1, 2, or "ALL"
 # color
-spatial_size = 16
-hist_bins = 16
+spatial_size = 32
+hist_bins = 32
 
 t = time.time()
 car_features = extract_features(cars, cspace=colorspace, orient=orient,
@@ -148,7 +151,8 @@ save_dict = {
     "pix_per_cell": pix_per_cell,
     "cell_per_block": cell_per_block,
     "spatial_size": spatial_size,
-    "hist_bins": hist_bins
+    "hist_bins": hist_bins,
+    "colorspace": colorspace
 }
 
 pickle.dump(save_dict, open("svc_save.p", "wb"))

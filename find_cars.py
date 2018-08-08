@@ -22,6 +22,7 @@ pix_per_cell = dist_pickle["pix_per_cell"]
 cell_per_block = dist_pickle["cell_per_block"]
 spatial_size = dist_pickle["spatial_size"]
 hist_bins = dist_pickle["hist_bins"]
+colorspace = dist_pickle["colorspace"]
 
 
 # Define a single function that can extract features using hog sub-sampling and make predictions
@@ -30,7 +31,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     img = img.astype(np.float32) / 255
 
     img_tosearch = img[ystart:ystop, :, :]
-    ctrans_tosearch = convert_color(img_tosearch, conv='RGB2YCrCb')
+    ctrans_tosearch = convert_color(img_tosearch, conv='RGB2' + colorspace)
     if scale != 1:
         imshape = ctrans_tosearch.shape
         ctrans_tosearch = cv2.resize(ctrans_tosearch, (np.int(imshape[1] / scale), np.int(imshape[0] / scale)))
@@ -98,11 +99,9 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 def get_all_boxes(input_img):
     # each row is y_min, y_max, and scale (where 1 corresponds to 64x64)
     search_sets = [
-        [390, 490, 0.7],
         [380, 540, 1],
         [360, 600, 1.5],
         [360, 640, 2],
-        [360, 640, 2.25],
         [360, 640, 2.5]
     ]
 
