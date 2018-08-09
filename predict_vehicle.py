@@ -40,7 +40,7 @@ def blobs_to_boxes(blobs, n):
     return result_boxes
 
 
-def predict_vehicle(img, n_steps=10, threshold=180, mine_boxes=False):
+def predict_vehicle(img, n_steps=6, threshold=60, mine_boxes=False):
     """Draws vehicle detection on input images
 
 

@@ -57,6 +57,8 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
     hog2 = get_hog_features(ch2, orient, pix_per_cell, cell_per_block, feature_vec=False)
     hog3 = get_hog_features(ch3, orient, pix_per_cell, cell_per_block, feature_vec=False)
 
+    decision_threshold = 2
+
     for xb in range(nxsteps):
         for yb in range(nysteps):
             ypos = yb * cells_per_step
@@ -84,9 +86,9 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
             test_features = X_scaler.transform(full_feature)
 
             # test_features = X_scaler.transform(np.hstack((shape_feat, hist_feat)).reshape(1, -1))
-            test_prediction = svc.predict(test_features)
+            test_score = svc.decision_function(test_features)
 
-            if test_prediction == 1:
+            if test_score > decision_threshold:
                 xbox_left = np.int(xleft * scale)
                 ytop_draw = np.int(ytop * scale)
                 win_draw = np.int(window * scale)
@@ -99,7 +101,8 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 def get_all_boxes(input_img):
     # each row is y_min, y_max, and scale (where 1 corresponds to 64x64)
     search_sets = [
-        [380, 540, 1],
+        [380, 550, 0.8],
+        [380, 560, 1],
         [360, 600, 1.5],
         [360, 640, 2],
         [360, 640, 2.5]
