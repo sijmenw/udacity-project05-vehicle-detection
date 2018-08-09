@@ -71,8 +71,7 @@ Below is an example of the same settings, except the scale is now 2.
 
 #### 2. Examples of test images
 
-Below are examples of images before and after detection. Some false positives are still detected (example 4). Overall the cars
- are detected well.
+Below are examples of images before and after detection.
 
 Before 1:
 
@@ -131,9 +130,12 @@ Here's a [link to my video result](./result_vid.mp4)
 
 #### 2. Filter false positives
 
+First, a decision boundary threshold has been applied to count all cases that are not very certain as Negative.
+Extraction of scoring and comparison to the threshold for each example can be seen in `find_cars.py` (lines 86-88).
+
 I recorded the positions of positive detections in each frame of the video.
  From the positive detections I created a heatmap and then thresholded that map in an attempt to reduce false positives.
- I used scipy.ndimage.measurements.label() (`predict_vehicle.py` line 84)to generate labels for each 'blob'.
+ I used scipy.ndimage.measurements.label() (`predict_vehicle.py` line 84) to generate labels for each 'blob'.
  I then calculated the min and max values for the x and y coordinates for each label and drew a bounding box accordingly
  (`predict_vehicle.py` lines 20-40).
 
@@ -142,10 +144,7 @@ The code for this can be found in `predict_vehicle.py` (lines 15-92).
 ---
 
 ### Discussion
-Some False positives are still detected, this could be fixed by doing more negative-negative mining.
-Furthermore, the bounding boxes are sometimes a bit large, this is very likely due to the data that is selected.
-When a portion of the car is visible in a patch, the patch is classified under vehicle for training.
-Because of this, the parts around the car are also detected as vehicle, and thus classified as such.
+The boundings boxes are not always the appropriate size, this could be improved by adding more data from edges of vehicles and their surroundings.
 
 To prevent the black and white car being detected as one vehicle, the number of vehicles on screen could be tracked,
 making sure that two vehicles never blend into one. A more complex detection would have to be used to separate one blob in the
